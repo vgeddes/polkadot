@@ -15,7 +15,6 @@ readme = "README.md"
 [dependencies]
 polkadot-cli = { path = "cli", features = [ "kusama-native", "westend-native", "rococo-native" ]  }
 color-eyre = { version = "0.6.1", default-features = false }
-parity-util-mem = { version = "0.11.0", default-features = false, features = ["jemalloc-global"] }
 
 [dev-dependencies]
 assert_cmd = "2.0.4"
@@ -230,3 +229,15 @@ polkadot = { path = "/usr/bin/polkadot" }
 
 [package.metadata.spellcheck]
 config = "./scripts/ci/gitlab/spellcheck.toml"
+
+# x86_64-unknown-linux-gnu
+[target.x86_64-unknown-linux-gnu.dependencies]
+parity-util-mem = { version = "0.11.0", default-features = false, features = ["jemalloc-global"] }
+
+# Apple Silicon chips
+[target.aarch64-apple-darwin.dependencies]
+parity-util-mem = { version = "0.11.0", default-features = false, features = ["mimalloc-global"] }
+
+# linux/arm64
+[target.aarch64-unknown-linux-gnu.dependencies]
+parity-util-mem = { version = "0.11.0", default-features = false, features = ["mimalloc-global"] }
