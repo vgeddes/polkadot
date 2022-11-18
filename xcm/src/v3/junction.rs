@@ -20,7 +20,7 @@ use super::{Junctions, MultiLocation};
 use crate::{
 	v2::{
 		BodyId as OldBodyId, BodyPart as OldBodyPart, Junction as OldJunction,
-		NetworkId as OldNetworkId,
+		NetworkId as OldNetworkId, networks
 	},
 	VersionedMultiLocation,
 };
@@ -63,12 +63,33 @@ pub enum NetworkId {
 	BitcoinCash,
 }
 
+mod old_network_names {
+	pub const WESTEND: &[u8] = b"Westend";
+	pub const ROCOCO: &[u8] = b"Rococo";
+	pub const WOCOCO: &[u8] = b"Wococo";
+	pub const ETHEREUM: &[u8] = b"Ethereum";
+	pub const ETHEREUM_CLASSIC: &[u8] = b"EthereumClassic";
+	pub const BITCOIN_CORE: &[u8] = b"BitcoinCore";
+	pub const BITCOIN_CASH: &[u8] = b"BitcoinCash";
+}
+
 impl From<OldNetworkId> for Option<NetworkId> {
 	fn from(old: OldNetworkId) -> Option<NetworkId> {
 		use OldNetworkId::*;
 		match old {
 			Any => None,
-			Named(_) => None,
+			Named(s) => {
+				match s.as_ref() {
+					old_network_names::WESTEND => Some(NetworkId::Westend),
+					old_network_names::ROCOCO => Some(NetworkId::Rococo),
+					old_network_names::WOCOCO => Some(NetworkId::Wococo),
+					old_network_names::ETHEREUM => Some(NetworkId::Ethereum { chain_id: 1 }),
+					old_network_names::ETHEREUM_CLASSIC => Some(NetworkId::Ethereum { chain_id: 61 }),
+					old_network_names::BITCOIN_CORE => Some(NetworkId::BitcoinCore),
+					old_network_names::BITCOIN_CASH => Some(NetworkId::BitcoinCash),
+					_ => None,
+				}
+			}
 			Polkadot => Some(NetworkId::Polkadot),
 			Kusama => Some(NetworkId::Kusama),
 		}

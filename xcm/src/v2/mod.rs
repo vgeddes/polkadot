@@ -54,7 +54,7 @@ use super::{
 	v3::{
 		BodyId as NewBodyId, BodyPart as NewBodyPart, Instruction as NewInstruction,
 		NetworkId as NewNetworkId, Response as NewResponse, WeightLimit as NewWeightLimit,
-		Xcm as NewXcm,
+		Xcm as NewXcm, old_network_names
 	},
 	DoubleEncoded, GetWeight,
 };
@@ -125,6 +125,15 @@ impl TryInto<NetworkId> for Option<NewNetworkId> {
 			None => NetworkId::Any,
 			Some(Polkadot) => NetworkId::Polkadot,
 			Some(Kusama) => NetworkId::Kusama,
+			Some(Ethereum {
+				chain_id: 1
+			}) => {
+				let name = old_network_names::ETHEREUM
+					.to_vec()
+					.try_into()
+					.expect("array size will never be out of bounds; qed");
+				NetworkId::Named(name)
+			}
 			_ => return Err(()),
 		})
 	}
